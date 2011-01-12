@@ -4,6 +4,8 @@
  */
 package org.clevercloud.botrapi;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -17,10 +19,14 @@ import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.clevercloud.botrapi.converters.VideosRequestConverter;
+import org.clevercloud.botrapi.models.Video;
+import org.clevercloud.botrapi.models.VideoRequest;
 
 /**
  *
@@ -42,10 +48,13 @@ public class BotrAPI {
         this(apiKey, apiSecret, "https://api.bitsontherun.com/v1/");
     }
 
-    public String getVideos() {
+    public List<Video> getVideos() {
         Map<String, String> m = new HashMap<String, String>();
         m.put("result_limit", "0");
-        return makeRequest("videos/list", m);
+        String videos = makeRequest("videos/list", m);
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
+        return liste;
     }
 
     public String getAccountContents() {

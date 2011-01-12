@@ -37,12 +37,8 @@ public class Main {
         String key = properties.getProperty("key");
         String secret = properties.getProperty("secret");
         BotrAPI botr = new BotrAPI(key, secret);
+        List<Video> videos = botr.getVideos();
 
-        System.out.println(botr.getVideos());
-
-        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
-        String videos = botr.getVideos();
-        VideoRequest vr = gson.fromJson(videos, VideoRequest.class);
-        System.out.println(gson.toJson(vr));
+        System.out.println(videos.get(0).getAuthor());
     }
 }
