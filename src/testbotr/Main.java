@@ -4,11 +4,22 @@
  */
 package testbotr;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonElement;
+import com.google.gson.reflect.TypeToken;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Type;
 import java.security.NoSuchAlgorithmException;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Properties;
+import java.util.Set;
 import org.clevercloud.botrapi.BotrAPI;
+import org.clevercloud.botrapi.converters.VideosRequestConverter;
+import org.clevercloud.botrapi.models.Video;
+import org.clevercloud.botrapi.models.VideoRequest;
 
 /**
  *
@@ -28,7 +39,10 @@ public class Main {
         BotrAPI botr = new BotrAPI(key, secret);
 
         System.out.println(botr.getVideos());
-        System.out.println(botr.getAccountContents());
 
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        String videos = botr.getVideos();
+        VideoRequest vr = gson.fromJson(videos, VideoRequest.class);
+        System.out.println(gson.toJson(vr));
     }
 }
