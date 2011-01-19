@@ -5,8 +5,6 @@
 
 package org.clevercloud.botrapi.models;
 
-import java.util.Set;
-
 /**
  *
  * @author bastien
@@ -42,6 +40,14 @@ public class Video {
         this.author = author;
         this.key = key;
         this.date = date;
+    }
+
+    public String getThumbnail() {
+        return "http://content.bitsontherun.com/thumbs/" + this.key + ".jpg";
+    }
+
+    public String getThumbnail(Integer width) {
+        return "http://content.bitsontherun.com/thumbs/" + this.key + "-" + width + ".jpg";
     }
 
     /**
