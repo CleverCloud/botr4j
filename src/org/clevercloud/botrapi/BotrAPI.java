@@ -25,6 +25,8 @@ import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.clevercloud.botrapi.converters.VideosRequestConverter;
+import org.clevercloud.botrapi.models.Tag;
+import org.clevercloud.botrapi.models.TagRequest;
 import org.clevercloud.botrapi.models.Video;
 import org.clevercloud.botrapi.models.VideoRequest;
 import org.clevercloud.botrapi.models.View;
@@ -76,11 +78,13 @@ public class BotrAPI {
         return liste;
     }
 
-    public String getTags() {
+    public List<Tag> getTags() {
         Map<String, String> m = new HashMap<String, String>();
         m.put("order_by", "videos:desc");
-        String url = "videos/tags/list";
-        return makeRequest(url, m);
+        String tags = makeRequest("videos/tags/list", m);
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        List<Tag> liste = gson.fromJson(tags, TagRequest.class).getTags();
+        return liste;
     }
 
     private String makeRequest(String url, Map<String, String> args) {
