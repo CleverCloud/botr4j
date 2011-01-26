@@ -28,6 +28,7 @@ import org.clevercloud.botrapi.converters.VideosRequestConverter;
 import org.clevercloud.botrapi.models.Tag;
 import org.clevercloud.botrapi.models.TagRequest;
 import org.clevercloud.botrapi.models.Video;
+import org.clevercloud.botrapi.models.VideoByKeyRequest;
 import org.clevercloud.botrapi.models.VideoRequest;
 import org.clevercloud.botrapi.models.View;
 import org.clevercloud.botrapi.models.ViewRequest;
@@ -59,6 +60,15 @@ public class BotrAPI {
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
         List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
         return liste;
+    }
+
+    public Video getVideo(String videoKey) {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("video_key", videoKey);
+        String reqVideo = makeRequest("videos/show", m);
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        Video video = gson.fromJson(reqVideo, VideoByKeyRequest.class).getVideo();
+        return video;
     }
 
     public String getAccountContents() {
