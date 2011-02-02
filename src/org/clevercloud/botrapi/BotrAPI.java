@@ -56,6 +56,7 @@ public class BotrAPI {
     public List<Video> getVideos() {
         Map<String, String> m = new HashMap<String, String>();
         m.put("result_limit", "0");
+        m.put("statuses_filter", "ready");
         String videos = makeRequest("videos/list", m);
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
         List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
