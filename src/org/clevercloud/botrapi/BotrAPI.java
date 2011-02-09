@@ -7,6 +7,7 @@ package org.clevercloud.botrapi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
@@ -67,6 +68,8 @@ public class BotrAPI {
         Map<String, String> m = new HashMap<String, String>();
         m.put("video_key", videoKey);
         String reqVideo = makeRequest("videos/show", m);
+        if(reqVideo == null)
+            return null;
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
         Video video = gson.fromJson(reqVideo, VideoByKeyRequest.class).getVideo();
         return video;
