@@ -5,6 +5,8 @@
 
 package org.clevercloud.botrapi.models;
 
+import java.util.Map;
+
 /**
  *
  * @author bastien
@@ -23,11 +25,13 @@ public class Video {
     private String author;
     private String key;
     private String date;
+    private String error;
+    private Map<String, String> unknownField;
 
     public Video() {
     }
 
-    public Video(String status, String description, String tags, long views, String title, String mediatype, Custom custom, float duration, String link, String author, String key, String date) {
+    public Video(String status, String description, String tags, long views, String title, String mediatype, Custom custom, float duration, String link, String author, String key, String date, String error, Map<String, String> unknownField) {
         this.status = status;
         this.description = description;
         this.tags = tags;
@@ -40,6 +44,8 @@ public class Video {
         this.author = author;
         this.key = key;
         this.date = date;
+        this.error = error;
+        this.unknownField = unknownField;
     }
 
     public String getThumbnail() {
@@ -216,6 +222,28 @@ public class Video {
      */
     public void setDate(String date) {
         this.date = date;
+    }
+
+    public Map<String, String> getUnknownField() {
+        return unknownField;
+    }
+
+    public void setUnknownField(Map<String, String> unknownField) {
+        this.unknownField = unknownField;
+    }
+
+    /**
+     * @return the error
+     */
+    public String getError() {
+        return error;
+    }
+
+    /**
+     * @param error the error to set
+     */
+    public void setError(String error) {
+        this.error = error;
     }
 
 }

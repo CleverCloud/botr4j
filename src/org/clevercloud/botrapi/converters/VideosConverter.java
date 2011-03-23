@@ -10,6 +10,7 @@ import com.google.gson.JsonDeserializer;
 import com.google.gson.JsonElement;
 import java.lang.reflect.Field;
 import java.lang.reflect.Type;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map.Entry;
 import java.util.logging.Level;
@@ -28,8 +29,8 @@ public class VideosConverter implements JsonDeserializer<Video> {
         Gson g = new Gson();
         Class c = Video.class;
         while (it.hasNext()) {
+            Entry<String, JsonElement> entry = it.next();
             try {
-                Entry<String, JsonElement> entry = it.next();
                 Field f = c.getDeclaredField(entry.getKey());
                 Boolean b = f.isAccessible();
                 f.setAccessible(true);
@@ -40,6 +41,9 @@ public class VideosConverter implements JsonDeserializer<Video> {
             } catch (IllegalAccessException ex) {
                 Logger.getLogger(VideosConverter.class.getName()).log(Level.SEVERE, null, ex);
             } catch (NoSuchFieldException ex) {
+                if (v.getUnknownField() == null)
+                    v.setUnknownField(new HashMap<String, String>());
+                v.getUnknownField().put(entry.getKey(), entry.getValue().toString());
                 Logger.getLogger(VideosConverter.class.getName()).log(Level.SEVERE, null, ex);
             } catch (SecurityException ex) {
                 Logger.getLogger(VideosConverter.class.getName()).log(Level.SEVERE, null, ex);

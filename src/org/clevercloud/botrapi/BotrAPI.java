@@ -55,8 +55,12 @@ public class BotrAPI {
     }
 
     public List<Video> getVideos() {
+        return getVideos(0);
+    }
+
+    public List<Video> getVideos(int resultLimit) {
         Map<String, String> m = new HashMap<String, String>();
-        m.put("result_limit", "0");
+        m.put("result_limit", Integer.toString(resultLimit));
         m.put("statuses_filter", "ready");
         String videos = makeRequest("videos/list", m);
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
@@ -68,8 +72,9 @@ public class BotrAPI {
         Map<String, String> m = new HashMap<String, String>();
         m.put("video_key", videoKey);
         String reqVideo = makeRequest("videos/show", m);
-        if(reqVideo == null)
+        if (reqVideo == null) {
             return null;
+        }
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
         Video video = gson.fromJson(reqVideo, VideoByKeyRequest.class).getVideo();
         return video;
