@@ -10,6 +10,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
@@ -118,6 +119,29 @@ public class BotrAPI {
         return liste;
     }
 
+    public List<Video> search(String text) {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("result_limit", "0");
+        m.put("statuses_filter", "ready");
+        text = text.replaceAll("\\s", "%20");
+        m.put("text", text);
+        String videos = makeRequest("videos/list", m);
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
+        return liste;
+    }
+
+    public List<Video> searchTags(String tags) {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("result_limit", "0");
+        m.put("statuses_filter", "ready");
+        m.put("tags", tags);
+        String videos = makeRequest("videos/list", m);
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
+        return liste;
+    }
+
     private String makeRequest(String url, Map<String, String> args) {
         try {
             args.put("api_key", this.apiKey);
@@ -128,7 +152,7 @@ public class BotrAPI {
             Collections.sort(listkey);
             String querystring = "";
             for (String string : listkey) {
-                querystring = querystring + string + "=" + URLEncoder.encode(args.get(string)) + "&";
+                querystring = querystring + string + "=" + URLEncoder.encode(args.get(string), "UTF-8") + "&";
             }
             querystring = querystring.substring(0, querystring.length() - 1); //suppression du caractere & en fin de chaine
             String signature = querystring + this.apiSecret;
@@ -148,8 +172,6 @@ public class BotrAPI {
                 full = full + line;
             }
             return full;
-        } catch (ProtocolException ex) {
-            Logger.getLogger(BotrAPI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (MalformedURLException ex) {
             Logger.getLogger(BotrAPI.class.getName()).log(Level.SEVERE, null, ex);
         } catch (IOException ex) {
