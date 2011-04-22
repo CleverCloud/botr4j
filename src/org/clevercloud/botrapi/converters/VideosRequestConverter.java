@@ -34,7 +34,6 @@ public class VideosRequestConverter implements JsonDeserializer<VideoRequest> {
         Type listType = new TypeToken<List<Video>>() {
         }.getType();
 
-        Gson g = new GsonBuilder().registerTypeAdapter(Video.class, new VideosConverter()).create();
         Class c = VideoRequest.class;
 
         while (it.hasNext()) {
@@ -45,9 +44,9 @@ public class VideosRequestConverter implements JsonDeserializer<VideoRequest> {
                 f.setAccessible(true);
                 if (f.getGenericType() instanceof ParameterizedType) {
                     ParameterizedType pt = (ParameterizedType) f.getGenericType();
-                    f.set(vr, g.fromJson(entry.getValue(), TypeToken.get(pt).getType()));
+                    f.set(vr, jdc.deserialize(entry.getValue(), TypeToken.get(pt).getType()));
                 } else {
-                    f.set(vr, g.fromJson(entry.getValue(), f.getType()));
+                    f.set(vr, jdc.deserialize(entry.getValue(), f.getType()));
                 }
                 f.setAccessible(b);
             } catch (IllegalArgumentException ex) {

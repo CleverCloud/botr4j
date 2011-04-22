@@ -26,6 +26,7 @@ import java.util.Map;
 import java.util.Random;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import org.clevercloud.botrapi.converters.VideosConverter;
 import org.clevercloud.botrapi.converters.VideosRequestConverter;
 import org.clevercloud.botrapi.models.Tag;
 import org.clevercloud.botrapi.models.TagRequest;
@@ -42,7 +43,9 @@ import org.clevercloud.botrapi.models.ViewRequest;
 public class BotrAPI {
 
     private String apiKey;
+
     private String apiSecret;
+
     private String baseUrl;
 
     public BotrAPI(String apiKey, String apiSecret, String baseUrl) {
@@ -59,14 +62,20 @@ public class BotrAPI {
         return getVideos(0);
     }
 
+    private VideoRequest deserializeVideoRequest(String videosJson) {
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).
+           registerTypeAdapter(Video.class, new VideosConverter()).create();
+        return gson.fromJson(videosJson, VideoRequest.class);
+    }
+
     public List<Video> getVideos(String orderBy) {
         Map<String, String> m = new HashMap<String, String>();
         m.put("result_limit", "0");
         m.put("statuses_filter", "ready");
         m.put("order_by", orderBy);
         String videos = makeRequest("videos/list", m);
-        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
-        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
+
+        List<Video> liste = deserializeVideoRequest(videos).getVideos();
         return liste;
     }
 
@@ -75,8 +84,8 @@ public class BotrAPI {
         m.put("result_limit", Integer.toString(resultLimit));
         m.put("statuses_filter", "ready");
         String videos = makeRequest("videos/list", m);
-        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
-        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
+
+        List<Video> liste = deserializeVideoRequest(videos).getVideos();
         return liste;
     }
 
@@ -87,7 +96,8 @@ public class BotrAPI {
         if (reqVideo == null) {
             return null;
         }
-        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).
+           registerTypeAdapter(Video.class, new VideosConverter()).create();
         Video video = gson.fromJson(reqVideo, VideoByKeyRequest.class).getVideo();
         return video;
     }
@@ -183,9 +193,7 @@ public class BotrAPI {
     }
 
     private String makeRequest(String url) {
-
         return makeRequest(url, new HashMap<String, String>());
-
     }
 
     public String getApiKey() {

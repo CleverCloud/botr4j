@@ -26,7 +26,6 @@ public class VideosConverter implements JsonDeserializer<Video> {
     public Video deserialize(JsonElement je, Type type, JsonDeserializationContext jdc) {
         Iterator<Entry<String, JsonElement>> it = je.getAsJsonObject().entrySet().iterator();
         Video v = new Video();
-        Gson g = new Gson();
         Class c = Video.class;
         while (it.hasNext()) {
             Entry<String, JsonElement> entry = it.next();
@@ -34,7 +33,7 @@ public class VideosConverter implements JsonDeserializer<Video> {
                 Field f = c.getDeclaredField(entry.getKey());
                 Boolean b = f.isAccessible();
                 f.setAccessible(true);
-                f.set(v, g.fromJson(entry.getValue(), f.getType()));
+                f.set(v, jdc.deserialize(entry.getValue(), f.getType()));
                 f.setAccessible(b);
             } catch (IllegalArgumentException ex) {
                 Logger.getLogger(VideosConverter.class.getName()).log(Level.SEVERE, null, ex);
