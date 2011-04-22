@@ -1,2 +1,4 @@
 build
-nbproject/build-impl.xml nbproject/genfiles.properties nbproject/private nbproject/project.properties nbproject/project.xml
+nbproject
+dist
+target
