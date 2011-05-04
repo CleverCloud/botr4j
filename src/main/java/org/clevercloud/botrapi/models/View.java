@@ -5,11 +5,13 @@
 
 package org.clevercloud.botrapi.models;
 
+import java.io.Serializable;
+
 /**
  *
  * @author bastien
  */
-public class View {
+public class View implements Serializable {
 
     private String status;
     private Integer pageviews;

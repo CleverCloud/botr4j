@@ -5,11 +5,13 @@
 
 package org.clevercloud.botrapi.models;
 
+import java.io.Serializable;
+
 /**
  *
  * @author bastien
  */
-public class Tag {
+public class Tag implements Serializable {
 
     private String name;
     private Integer videos;

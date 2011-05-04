@@ -7,13 +7,10 @@ package org.clevercloud.botrapi;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 import java.io.BufferedReader;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.security.MessageDigest;
@@ -86,6 +83,17 @@ public class BotrAPI {
         String videos = makeRequest("videos/list", m);
 
         List<Video> liste = deserializeVideoRequest(videos).getVideos();
+        return liste;
+    }
+
+    public List<Video> getVideos(int resultOffset, int resultLimit) {
+        Map<String, String> m = new HashMap<String, String>();
+        m.put("result_limit", Integer.toString(resultLimit));
+        m.put("result_offset", Integer.toString(resultOffset));
+        m.put("statuses_filter", "ready");
+        String videos = makeRequest("videos/list", m);
+        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
+        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
         return liste;
     }
 

@@ -5,13 +5,14 @@
 
 package org.clevercloud.botrapi.models;
 
+import java.io.Serializable;
 import java.util.Map;
 
 /**
  *
  * @author bastien
  */
-public class Video {
+public class Video implements Serializable {
 
     private String status;
     private String description;
