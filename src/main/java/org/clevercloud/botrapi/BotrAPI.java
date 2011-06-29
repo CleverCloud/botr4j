@@ -40,9 +40,7 @@ import org.clevercloud.botrapi.models.ViewRequest;
 public class BotrAPI {
 
     private String apiKey;
-
     private String apiSecret;
-
     private String baseUrl;
 
     public BotrAPI(String apiKey, String apiSecret, String baseUrl) {
@@ -55,41 +53,37 @@ public class BotrAPI {
         this(apiKey, apiSecret, "https://api.bitsontherun.com/v1/");
     }
 
-    public List<Video> getVideos() {
-        return getVideos(0);
-    }
-
     private VideoRequest deserializeVideoRequest(String videosJson) {
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).
-           registerTypeAdapter(Video.class, new VideosConverter()).create();
+                registerTypeAdapter(Video.class, new VideosConverter()).create();
         return gson.fromJson(videosJson, VideoRequest.class);
     }
 
-    public List<Video> getVideos(String orderBy) {
+    public List<Video> getVideos(List<String> tags, String text, String orderBy, Integer resultLimit, Integer resultOffset) {
         Map<String, String> m = new HashMap<String, String>();
-        m.put("result_limit", "0");
-        m.put("statuses_filter", "ready");
-        m.put("order_by", orderBy);
-        String videos = makeRequest("videos/list", m);
-
-        List<Video> liste = deserializeVideoRequest(videos).getVideos();
-        return liste;
-    }
-
-    public List<Video> getVideos(int resultLimit) {
-        Map<String, String> m = new HashMap<String, String>();
-        m.put("result_limit", Integer.toString(resultLimit));
-        m.put("statuses_filter", "ready");
-        String videos = makeRequest("videos/list", m);
-
-        List<Video> liste = deserializeVideoRequest(videos).getVideos();
-        return liste;
-    }
-
-    public List<Video> getVideos(int resultOffset, int resultLimit) {
-        Map<String, String> m = new HashMap<String, String>();
-        m.put("result_limit", Integer.toString(resultLimit));
-        m.put("result_offset", Integer.toString(resultOffset));
+        if (tags != null) {
+            String tagsStr = "";
+            for (int i = 0; i < (tags.size() - 1); i++) {
+                tagsStr += tags.get(i) + ",";
+            }
+            tagsStr += tags.get(tags.size() - 1);
+            m.put("tags", tagsStr);
+        }
+        if (text != null) {
+            text = text.replaceAll("\\s", "%20");
+            m.put("text", text);
+        }
+        if (orderBy != null) {
+            m.put("order_by", orderBy);
+        }
+        if (resultLimit != null) {
+            m.put("result_limit", Integer.toString(resultLimit));
+        } else {
+            m.put("result_limit", "0");
+        }
+        if (resultOffset != null) {
+            m.put("result_offset", Integer.toString(resultOffset));
+        }
         m.put("statuses_filter", "ready");
         String videos = makeRequest("videos/list", m);
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
@@ -105,7 +99,7 @@ public class BotrAPI {
             return null;
         }
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).
-           registerTypeAdapter(Video.class, new VideosConverter()).create();
+                registerTypeAdapter(Video.class, new VideosConverter()).create();
         Video video = gson.fromJson(reqVideo, VideoByKeyRequest.class).getVideo();
         return video;
     }
@@ -134,29 +128,6 @@ public class BotrAPI {
         String tags = makeRequest("videos/tags/list", m);
         Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
         List<Tag> liste = gson.fromJson(tags, TagRequest.class).getTags();
-        return liste;
-    }
-
-    public List<Video> search(String text) {
-        Map<String, String> m = new HashMap<String, String>();
-        m.put("result_limit", "0");
-        m.put("statuses_filter", "ready");
-        text = text.replaceAll("\\s", "%20");
-        m.put("text", text);
-        String videos = makeRequest("videos/list", m);
-        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
-        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
-        return liste;
-    }
-
-    public List<Video> searchTags(String tags) {
-        Map<String, String> m = new HashMap<String, String>();
-        m.put("result_limit", "0");
-        m.put("statuses_filter", "ready");
-        m.put("tags", tags);
-        String videos = makeRequest("videos/list", m);
-        Gson gson = new GsonBuilder().registerTypeAdapter(VideoRequest.class, new VideosRequestConverter()).create();
-        List<Video> liste = gson.fromJson(videos, VideoRequest.class).getVideos();
         return liste;
     }
 
